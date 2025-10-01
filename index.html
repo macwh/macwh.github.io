@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The Clueless Adventurer Puzzle Trove - Review Graph</title>
+<script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+<script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.min.js"></script>
+<script src="https://unpkg.com/tippy.js@6/dist/tippy-bundle.umd.js"></script>
+<script src="https://unpkg.com/layout-base/layout-base.js"></script>
+<script src="https://unpkg.com/cose-base/cose-base.js"></script>
+<script src="https://unpkg.com/cytoscape-cose-bilkent/cytoscape-cose-bilkent.js"></script>
+
+<link rel="stylesheet" href="styles.css">
+
+</head>
+<body>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JB63BXD6L2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-JB63BXD6L2');
+</script>
+  
+<div id="sidebar">
+  <div class="toolbar-header">
+    <img src="icon.jpg" alt="Icon" class="toolbar-icon">
+    <div class="toolbar-text">
+      <h1>The Clueless Adventurer Puzzle Trove</h1>
+      <h2><a href="https://store.steampowered.com/curator/43326007-The-Clueless-Adventurer-Puzzle-Trove/" target="_blank">Puzzle Game Reviews &amp; Classification by macwh</a></h2>
+    </div>
+  </div>
+  <div class="toolbar">
+    <button data-target="Logical / Reasoning" class="btn">Puzzle</button>
+    <button data-target="Exploration / Observation" class="btn">Adventure</button>
+    <button data-target="Reflex / Action" class="btn">Action</button>
+    <button data-target="Management / Systems" class="btn">Simulation</button>
+    <div class="split-button">
+    <button data-target="Negative" class="btn">Negative<br>❌</button>
+    <button data-target="Positive" class="btn">Positive<br>✅</button>
+    <button data-target="Top" class="btn">Top Rated<br>⭐️</button>
+    </div>
+    <div class="split-button">
+    <button data-target="Casual" class="btn">Casual<br>🏖</button>
+    <button data-target="Hardest" class="btn">Hardest<br>💡</button>
+    <button data-target="Unlimited" class="btn">Unlimited<br>∞</button>
+    </div>
+    <div class="split-button">
+    <button data-target="Art" class="btn">Game as Art<br>🖼</button>
+    <button data-target="Story" class="btn">Story Rich<br>📕</button>
+    <button data-target="Classic" class="btn">Classics<br>💾</button>
+    </div>
+    <button id="toggleLayout" class="btn">Disconnect Games</button>
+    <div class="toolbar-text">
+    <h3><a href="https://github.com/macwh/macwh.github.io" target="_blank">About</a></h3>
+    </div>
+    </div>
+  </div>
+<div id="cy"></div>
+<div id="tooltip"class="tooltip"></div>
+
+<script type="module" src="./src/app.js"></script>
+
+</body>
+</html>
