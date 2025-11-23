@@ -1,11 +1,18 @@
 export {
-	buttonEventHandlers
+	buttonEventHandlers,
+	resetToolbar
 }
 import {
 	toggleConnect,
 	layoutget,
 	setFilter
 } from '../graph/graph.js'
+
+function resetToolbar() {
+	document.querySelectorAll('.toolbar button').forEach(btn => {
+		btn.classList.remove('active');
+	});
+}
 
 function buttonEventHandlers(cy) {
 

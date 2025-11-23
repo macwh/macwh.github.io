@@ -6,6 +6,9 @@ export {
     setFilter,
     assignHandlers
 }
+import {
+  resetToolbar
+} from '../ui/toolbar.js'
 
 let cy
 let connect = true
@@ -335,6 +338,16 @@ function assignHandlers() {
         cy.on('tap', 'node[type="game"]', (evt) => {
             const url = evt.target.data('url');
             if (url) window.open(url, '_blank');
+        });
+
+        cy.on('tap', function (event) {
+            if (event.target === cy) {
+                filters = [];
+                sel_ids = [];
+                tooltip.style.display = 'none';
+                applyFilters();
+                resetToolbar();
+            }
         });
     });
 }
