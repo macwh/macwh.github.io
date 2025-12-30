@@ -9,6 +9,8 @@
 <script src="https://unpkg.com/layout-base/layout-base.js"></script>
 <script src="https://unpkg.com/cose-base/cose-base.js"></script>
 <script src="https://unpkg.com/cytoscape-cose-bilkent/cytoscape-cose-bilkent.js"></script>
+<script src="https://unpkg.com/dagre@0.8.5/dist/dagre.js"></script>
+<script src="https://unpkg.com/cytoscape-dagre@2.5.0/cytoscape-dagre.js"></script>
 
 <link rel="stylesheet" href="styles.css">
 
@@ -51,9 +53,14 @@
     <button data-target="Story" class="btn">Story Rich<br>📕</button>
     <button data-target="Classic" class="btn">Classics<br>💾</button>
     </div>
-    <button id="toggleLayout" class="btn">Disconnect Games</button>
+    <div class="split-button">
+    <button id="setGraph" class="btn">Graph</button>
+    <button id="setTime" class="btn">Timeline</button>
+    <button id="setDisconnect" class="btn">Disconnect</button>
+    </div>
     <div class="toolbar-text">
-    <h3><a href="https://github.com/macwh/macwh.github.io" target="_blank">About</a></h3>
+    <h3><p>All icons from game resources. All physical media from <a href="https://www.screenscraper.fr">ScreenScraper.</a></p><p><a href="https://github.com/macwh/macwh.github.io" target="_blank">About</a></p>
+    </h3>
     </div>
     </div>
   </div>

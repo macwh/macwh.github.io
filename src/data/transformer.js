@@ -21,9 +21,10 @@ function assignColors(db) {
 		colors[m.id] = m.color
 	});
 
-	function computeColor(m) {
+	function computeColor(m,from) {
 		if (m.color) return m.color;
-		const parentColors = parents(m).map(p => computeColor(db.find(x => x.id === p)));
+		const parentColors = parents(m).map(p => computeColor(db.find(x => x.id === p), m));
+
 		const rgb = mixRGB(parentColors);
 		m.color = rgbTripleToCss(rgb);
 		colors[m.id] = m.color
@@ -139,7 +140,7 @@ function transform(data, mechanics, genres, games) {
 				type: "game",
 				mechanics: Array.from(inherited[g.id]),
 				color: colors[g.id],
-				icon: g.icon,
+				icon: encodeURI(g.icon),
 				url: g.url,
 				year: g.year,
 				rating: g.rating,

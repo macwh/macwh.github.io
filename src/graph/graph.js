@@ -1,7 +1,9 @@
 export {
     initGraph,
-    layoutget,
-    toggleConnect,
+    layoutget_run,
+    setDisconnect,
+    setTime,
+    setGraph,
     applyFilters,
     setFilter,
     assignHandlers
@@ -11,12 +13,59 @@ import {
 } from '../ui/toolbar.js'
 
 let cy
-let connect = true
+let disconnect = false
+let graph = true
+let timeline = false
 let temp_elements;
 
-function toggleConnect() {
-    connect = !connect
-    return connect
+function updateDisconnects() {
+    if (disconnect) {
+        cy.elements('[type="gamegroup"]').style('visibility', 'hidden');
+        cy.elements('[type="gamegroup"]').style('display', 'none');
+        cy.edges('[type="group-genre"]').style('visibility', 'hidden');
+        cy.edges('[type="group-genre"]').style('display', 'none');
+        cy.edges('[type="group-mechanic"]').style('visibility', 'hidden');
+        cy.edges('[type="group-mechanic"]').style('display', 'none');
+        cy.edges('[type="group-game"]').style('visibility', 'hidden');
+        cy.edges('[type="group-game"]').style('display', 'none');
+    } else {
+        cy.elements('[type="gamegroup"]').style('visibility', 'visible');
+        cy.elements('[type="gamegroup"]').style('display', 'element');
+        cy.edges('[type="group-genre"]').style('visibility', 'visible');
+        cy.edges('[type="group-genre"]').style('display', 'element');
+        cy.edges('[type="group-mechanic"]').style('visibility', 'visible');
+        cy.edges('[type="group-mechanic"]').style('display', 'element');
+        cy.edges('[type="group-game"]').style('visibility', 'visible');
+        cy.edges('[type="group-game"]').style('display', 'element');
+    }
+}
+
+function setDisconnect() {
+    disconnect = true
+    graph = false
+    timeline = false
+    updateDisconnects()
+    applyFilters()
+    updateDisconnects()
+    return disconnect
+}
+
+function setGraph() {
+    disconnect = false
+    graph = true
+    timeline = false
+    updateDisconnects()
+    applyFilters()
+    return graph
+}
+
+function setTime() {
+    disconnect = false
+    graph = false
+    timeline = true
+    updateDisconnects()
+    applyFilters()
+    return timeline
 }
 
 function initGraph(elements, temps) {
@@ -94,7 +143,7 @@ function initGraph(elements, temps) {
     cy.userZoomingEnabled(true);
     cy.userPanningEnabled(true);
     assignHandlers();
-    layoutget().run();
+    layoutget_run();
     return cy;
 }
 
@@ -133,10 +182,12 @@ function setFilter(id) {
         else
             sel_ids.push(id);
     }
+
     applyFilters()
 }
 
 function applyFilters() {
+
     let sel = cy.nodes()
     if (sel_ids.length != 0) {
         sel_ids.forEach(f => {
@@ -155,18 +206,69 @@ function applyFilters() {
     }
 
     let connected = sel.union(sel.successors()).union(sel.predecessors());
-    cy.elements().addClass('faded');
-    connected.removeClass('faded');
-
+    cy.elements().style('visibility', 'hidden');
+    cy.elements().style('display', 'none');
+    connected.style('visibility', 'visible');
+    connected.style('display', 'element');
+    if (disconnect)
+        updateDisconnects()
+    layoutget_run()
 }
 
-function layoutget() {
+function layoutget_run() {
     // set layout
-    cytoscape.use(cytoscapeCoseBilkent);
 
-    return cy.layout({
+    cy.nodes().forEach((node, iy) => {
+        node.unlock(); })
+
+    if (timeline || disconnect) {
+        const spacingX = 64;
+        const spacingY = 64;
+        const y0 = 2000; 
+
+        if (timeline) {
+            const years = cy.nodes('[type = "game"]')
+              .map(n => n.data('year'))
+              .filter(y => y != null)
+              .sort((a, b) => a - b);
+
+            const minYear = Math.min(...years);
+            const maxYear = Math.max(...years);
+            const fullYears = Array.from({length: maxYear - minYear + 1}, (_, i) => minYear + i);
+
+            const nodesByYear = {};
+            cy.nodes('[type = "game"]').filter(n => n.style('visibility') === 'visible').forEach(n => {
+              const y = n.data('year');
+              if (!nodesByYear[y]) nodesByYear[y] = [];
+              nodesByYear[y].push(n);
+            });
+
+            fullYears.forEach((year, ix) => {
+              const nodes = nodesByYear[year] || [];
+
+              nodes.forEach((node, iy) => {
+                node.position({
+                  x: 100 + ix * spacingX,
+                  y: y0 + iy * spacingY
+                });
+                node.lock();
+              });
+            });
+        } else if (disconnect) {
+            cy.nodes('[type = "game"]').filter(n => n.style('visibility') === 'visible').sort((a, b) => a.data('year') - b.data('year')).forEach((node, i) => {
+                node.position({
+                  x: 100 + (i % 20)  * spacingX,
+                  y: y0 + Math.floor(i / 20) * spacingY
+                });
+                node.lock();
+            })
+        }
+    }
+
+    cy.layout({
         name: 'cose-bilkent',
-        animate: true,
+        animate: false,
+        eles: cy.elements(':visible'),
         animationDuration: 1000,
         randomize: true,
         nodeRepulsion: 5000,
@@ -175,27 +277,14 @@ function layoutget() {
         nestingFactor: 0.5,
         avoidOverlap: true,
         padding: 80,
+        nodeSep: 16,
+        rankSep: 100,
+        edgeSep: 10,
+        
+    }).run()
 
-        stop: () => {
-            if (!connect) {
-                // add hidden elements to be considered in selections
-                temp_elements.forEach(p => cy.add(p));
-            }
-            // set proper visibility for connections
-            cy.edges('[type="group-genre"]').forEach(ele => {
-                ele.style('visibility', connect ? 'visible' : 'hidden');
-            });
-            cy.edges('[type="group-mechanic"]').forEach(ele => {
-                ele.style('visibility', connect ? 'visible' : 'hidden');
-            });
-            cy.edges('[type="group-game"]').forEach(ele => {
-                ele.style('visibility', connect ? 'visible' : 'hidden');
-            });
-            cy.elements('[type="gamegroup"]').forEach(ele => {
-                ele.style('visibility', connect ? 'visible' : 'hidden');
-            });
-        }
-    });
+
+
 }
 
 function assignHandlers() {
@@ -222,7 +311,7 @@ function assignHandlers() {
     // hide tooltip and remove highlights
     cy.on('mouseout', 'node', evt => {
         tooltip.style.display = 'none';
-        applyFilters();
+        cy.elements().removeClass('faded');
     });
 
     cy.on('mouseover', 'node', evt => {
@@ -345,7 +434,6 @@ function assignHandlers() {
                 filters = [];
                 sel_ids = [];
                 tooltip.style.display = 'none';
-                applyFilters();
                 resetToolbar();
             }
         });

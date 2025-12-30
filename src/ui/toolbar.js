@@ -3,8 +3,10 @@ export {
 	resetToolbar
 }
 import {
-	toggleConnect,
-	layoutget,
+	setDisconnect,
+	setTime,
+	setGraph,
+	layoutget_run,
 	setFilter
 } from '../graph/graph.js'
 
@@ -12,9 +14,16 @@ function resetToolbar() {
 	document.querySelectorAll('.toolbar button').forEach(btn => {
 		btn.classList.remove('active');
 	});
+	document.getElementById('setGraph').classList.add('active');
+	setGraph();
+	layoutget_run();
 }
 
+let disconnect = false
+
 function buttonEventHandlers(cy) {
+
+	document.getElementById('setGraph').classList.add('active');
 
 	document.querySelectorAll('.toolbar button').forEach(btn => {
 		btn.addEventListener('click', () => {
@@ -22,18 +31,30 @@ function buttonEventHandlers(cy) {
 		});
 	});
 
-	// toggle game node connection
-	document.getElementById('toggleLayout').addEventListener('click', () => {
-		let connect = toggleConnect();
-		if (!connect) {
-			cy.remove('edge[type = "group-mechanic"]');
-			cy.remove('edge[type = "group-genre"]');
-			cy.remove('edge[type = "group-game"]');
-		}
-		layoutget().run();
+	document.getElementById('setDisconnect').addEventListener('click', () => {
+		setDisconnect();
+		document.getElementById('setTime').classList.remove('active');
+		document.getElementById('setGraph').classList.remove('active');
+		document.getElementById('setDisconnect').classList.add('active');
+		layoutget_run();
 	});
 
-	// attach genre click handlers
+	document.getElementById('setGraph').addEventListener('click', () => {
+		setGraph();
+		document.getElementById('setTime').classList.remove('active');
+		document.getElementById('setGraph').classList.add('active');
+		document.getElementById('setDisconnect').classList.remove('active');
+		layoutget_run();
+	});
+
+	document.getElementById('setTime').addEventListener('click', () => {
+		setTime();
+		document.getElementById('setTime').classList.add('active');
+		document.getElementById('setGraph').classList.remove('active');
+		document.getElementById('setDisconnect').classList.remove('active');
+		layoutget_run();
+	});
+
 	document.querySelectorAll('.toolbar button[data-target]').forEach(btn => {
 		btn.addEventListener('click', () => {
 			let id = btn.dataset.target;
